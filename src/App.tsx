@@ -78,8 +78,18 @@ function App() {
       <Menu />
       <Chat />
       <Toast />
+      <Exit />
     </div>
   );
 }
+
+
+function Exit(){
+  return (
+    <div>Exit</div>
+  )
+}
+
+
 
 export default App;
