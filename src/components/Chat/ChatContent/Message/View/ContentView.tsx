@@ -23,9 +23,7 @@ import { ChatInterface } from '@type/chat';
 
 import { codeLanguageSubset } from '@constants/chat';
 
-import RefreshButton from './Button/RefreshButton';
-import UpButton from './Button/UpButton';
-import DownButton from './Button/DownButton';
+
 import CopyButton from './Button/CopyButton';
 import EditButton from './Button/EditButton';
 import DeleteButton from './Button/DeleteButton';
@@ -35,15 +33,15 @@ import CodeBlock from '../CodeBlock';
 
 const ContentView = memo(
   ({
-    role,
     content,
     setIsEdit,
     messageIndex,
+    role,
   }: {
-    role: string;
     content: string;
     setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
     messageIndex: number;
+    role: string;
   }) => {
     const { handleSubmit } = useSubmit();
 
@@ -51,9 +49,7 @@ const ContentView = memo(
 
     const currentChatIndex = useStore((state) => state.currentChatIndex);
     const setChats = useStore((state) => state.setChats);
-    const lastMessageIndex = useStore((state) =>
-      state.chats ? state.chats[state.currentChatIndex].messages.length - 1 : 0
-    );
+
     const inlineLatex = useStore((state) => state.inlineLatex);
     const markdownMode = useStore((state) => state.markdownMode);
 
@@ -65,39 +61,7 @@ const ContentView = memo(
       setChats(updatedChats);
     };
 
-    const handleMove = (direction: 'up' | 'down') => {
-      const updatedChats: ChatInterface[] = JSON.parse(
-        JSON.stringify(useStore.getState().chats)
-      );
-      const updatedMessages = updatedChats[currentChatIndex].messages;
-      const temp = updatedMessages[messageIndex];
-      if (direction === 'up') {
-        updatedMessages[messageIndex] = updatedMessages[messageIndex - 1];
-        updatedMessages[messageIndex - 1] = temp;
-      } else {
-        updatedMessages[messageIndex] = updatedMessages[messageIndex + 1];
-        updatedMessages[messageIndex + 1] = temp;
-      }
-      setChats(updatedChats);
-    };
 
-    const handleMoveUp = () => {
-      handleMove('up');
-    };
-
-    const handleMoveDown = () => {
-      handleMove('down');
-    };
-
-    const handleRefresh = () => {
-      const updatedChats: ChatInterface[] = JSON.parse(
-        JSON.stringify(useStore.getState().chats)
-      );
-      const updatedMessages = updatedChats[currentChatIndex].messages;
-      updatedMessages.splice(updatedMessages.length - 1, 1);
-      setChats(updatedChats);
-      handleSubmit();
-    };
 
     const handleCopy = () => {
       navigator.clipboard.writeText(content);
@@ -105,7 +69,7 @@ const ContentView = memo(
 
     return (
       <>
-        <div className='markdown prose w-full md:max-w-full break-words dark:prose-invert dark share-gpt-message'>
+        <div className={`markdown prose prose-invert break-words ${role === 'user' ? 'max-w-md self-end bg-white bg-opacity-5 rounded-full pr-4 pl-4 pt-2 pb-2' : 'w-full w-auto'}`}>
           {markdownMode ? (
             <ReactMarkdown
               remarkPlugins={[
@@ -135,44 +99,7 @@ const ContentView = memo(
             <span className='whitespace-pre-wrap'>{content}</span>
           )}
         </div>
-        <div className='flex justify-end gap-2 w-full mt-2'>
-          {isDelete || (
-            <>
-              {!useStore.getState().generating &&
-                role === 'assistant' &&
-                messageIndex === lastMessageIndex && (
-                  <RefreshButton onClick={handleRefresh} />
-                )}
-              {messageIndex !== 0 && <UpButton onClick={handleMoveUp} />}
-              {messageIndex !== lastMessageIndex && (
-                <DownButton onClick={handleMoveDown} />
-              )}
-
-              <MarkdownModeButton />
-              <CopyButton onClick={handleCopy} />
-              <EditButton setIsEdit={setIsEdit} />
-              <DeleteButton setIsDelete={setIsDelete} />
-            </>
-          )}
-          {isDelete && (
-            <>
-              <button
-                className='p-1 hover:text-white'
-                aria-label='cancel'
-                onClick={() => setIsDelete(false)}
-              >
-                <CrossIcon />
-              </button>
-              <button
-                className='p-1 hover:text-white'
-                aria-label='confirm'
-                onClick={handleDelete}
-              >
-                <TickIcon />
-              </button>
-            </>
-          )}
-        </div>
+        <ContentControls isDelete={isDelete} setIsDelete={setIsDelete} messageIndex={messageIndex} handleCopy={handleCopy} setIsEdit={setIsEdit} handleDelete={handleDelete} />
       </>
     );
   }
@@ -204,5 +131,57 @@ const p = memo(
     return <p className='whitespace-pre-wrap'>{props?.children}</p>;
   }
 );
+
+
+
+const ContentControls = memo(({
+  isDelete,
+  setIsDelete,
+  messageIndex,
+  handleCopy,
+  handleDelete,
+  setIsEdit,
+}: {
+  isDelete: boolean;
+  setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  messageIndex: number;
+  handleCopy: () => void;
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  handleDelete: () => void;
+}) => {
+  
+  return (
+    <div className='flex flex-row justify-end gap-2 w-full mt-2'>
+      {isDelete || (
+        <>
+          <MarkdownModeButton />
+          <CopyButton onClick={handleCopy} />
+          <EditButton setIsEdit={setIsEdit} />
+          <DeleteButton setIsDelete={setIsDelete} />
+        </>
+      )}
+      {isDelete && (
+        <>
+          <button
+            className='p-1 hover:text-white'
+            aria-label='cancel'
+            onClick={() => setIsDelete(false)}
+          >
+            <CrossIcon />
+          </button>
+          <button
+            className='p-1 hover:text-white'
+            aria-label='confirm'
+            onClick={handleDelete}
+          >
+            <TickIcon />
+          </button>
+        </>
+      )}
+    </div>
+  )
+})
+
+
 
 export default ContentView;

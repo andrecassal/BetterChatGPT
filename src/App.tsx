@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import useStore from '@store/store';
-import i18n from './i18n';
+
 
 import Chat from '@components/Chat';
 import Menu from '@components/Menu';
@@ -17,29 +17,16 @@ function App() {
   const setApiKey = useStore((state) => state.setApiKey);
   const setCurrentChatIndex = useStore((state) => state.setCurrentChatIndex);
 
-  useEffect(() => {
-    document.documentElement.lang = i18n.language;
-    i18n.on('languageChanged', (lng) => {
-      document.documentElement.lang = lng;
-    });
-  }, []);
 
   useEffect(() => {
     // legacy local storage
     const oldChats = localStorage.getItem('chats');
     const apiKey = localStorage.getItem('apiKey');
-    const theme = localStorage.getItem('theme');
 
     if (apiKey) {
       // legacy local storage
       setApiKey(apiKey);
       localStorage.removeItem('apiKey');
-    }
-
-    if (theme) {
-      // legacy local storage
-      setTheme(theme as Theme);
-      localStorage.removeItem('theme');
     }
 
     if (oldChats) {
@@ -78,18 +65,8 @@ function App() {
       <Menu />
       <Chat />
       <Toast />
-      <Exit />
     </div>
   );
 }
-
-
-function Exit(){
-  return (
-    <div>Exit</div>
-  )
-}
-
-
 
 export default App;

@@ -7,8 +7,10 @@ import useSubmit from '@hooks/useSubmit';
 import { ChatInterface } from '@type/chat';
 
 import PopupModal from '@components/PopupModal';
-import TokenCount from '@components/TokenCount';
 import CommandPrompt from '../CommandPrompt';
+
+
+
 
 const EditView = ({
   content,
@@ -30,6 +32,9 @@ const EditView = ({
   const textareaRef = React.createRef<HTMLTextAreaElement>();
 
   const { t } = useTranslation();
+
+  
+
 
   const resetTextAreaHeight = () => {
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
@@ -81,6 +86,7 @@ const EditView = ({
   };
 
   const { handleSubmit } = useSubmit();
+
   const handleGenerate = () => {
     if (useStore.getState().generating) return;
     const updatedChats: ChatInterface[] = JSON.parse(
@@ -176,6 +182,7 @@ const EditViewButtons = memo(
     setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
     _setContent: React.Dispatch<React.SetStateAction<string>>;
   }) => {
+
     const { t } = useTranslation();
     const generating = useStore.getState().generating;
     const advancedMode = useStore((state) => state.advancedMode);
@@ -183,66 +190,51 @@ const EditViewButtons = memo(
     return (
       <div className='flex'>
         <div className='flex-1 text-center mt-2 flex justify-center'>
-          {sticky && (
-            <button
-              className={`btn relative mr-2 btn-primary ${
-                generating ? 'cursor-not-allowed opacity-40' : ''
-              }`}
-              onClick={handleGenerate}
-              aria-label={t('generate') as string}
-            >
-              <div className='flex items-center justify-center gap-2'>
-                {t('generate')}
-              </div>
-            </button>
-          )}
+          
 
-          {sticky || (
-            <button
-              className='btn relative mr-2 btn-primary'
-              onClick={() => {
-                !generating && setIsModalOpen(true);
-              }}
-            >
-              <div className='flex items-center justify-center gap-2'>
-                {t('generate')}
-              </div>
-            </button>
-          )}
 
-          <button
-            className={`btn relative mr-2 ${
-              sticky
-                ? `btn-neutral ${
-                    generating ? 'cursor-not-allowed opacity-40' : ''
-                  }`
-                : 'btn-neutral'
-            }`}
-            onClick={handleSave}
-            aria-label={t('save') as string}
-          >
-            <div className='flex items-center justify-center gap-2'>
-              {t('save')}
-            </div>
-          </button>
+          <Button
+            label={t('cancel')}
+            onClick={() => setIsEdit(false)}
+            />
+          <Button
+            label={t('generate')}
+            type='primary'
+            onClick={() => {
+              !generating && setIsModalOpen(true);
+            }}
 
-          {sticky || (
-            <button
-              className='btn relative btn-neutral'
-              onClick={() => setIsEdit(false)}
-              aria-label={t('cancel') as string}
-            >
-              <div className='flex items-center justify-center gap-2'>
-                {t('cancel')}
-              </div>
-            </button>
-          )}
+            />
+
         </div>
-        {sticky && advancedMode && <TokenCount />}
         <CommandPrompt _setContent={_setContent} />
       </div>
     );
   }
 );
+
+function Button({
+  label,
+  onClick,
+  className,
+  disabled,
+  type,
+}: {
+  label: string;
+  onClick: () => void;
+  className?: string;
+  disabled?: boolean;
+  type?: 'primary' | 'neutral';
+}) {
+
+  className = type + " " + (className || "btn relative mr-2");
+
+  return (
+    <button className={className} onClick={onClick} disabled={disabled}>
+      {label}
+    </button>
+  );
+}
+
 
 export default EditView;
