@@ -43,7 +43,6 @@ export const migrateV2 = (persistedState: LocalStorageInterfaceV2ToV3) => {
       frequency_penalty: _defaultChatConfig.frequency_penalty,
     };
   });
-  persistedState.autoTitle = false;
 };
 
 export const migrateV3 = (persistedState: LocalStorageInterfaceV3ToV4) => {

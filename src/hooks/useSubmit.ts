@@ -161,7 +161,6 @@ const useSubmit = () => {
 
       // generate title for new chats
       if (
-        useStore.getState().autoTitle &&
         currChats &&
         !currChats[currentChatIndex]?.titleSet
       ) {
@@ -187,14 +186,7 @@ const useSubmit = () => {
         updatedChats[currentChatIndex].titleSet = true;
         setChats(updatedChats);
 
-        // update tokens used for generating title
-        if (countTotalTokens) {
-          const model = _defaultChatConfig.model;
-          updateTotalTokenUsed(model, [message], {
-            role: 'assistant',
-            content: title,
-          });
-        }
+
       }
     } catch (e: unknown) {
       const err = (e as Error).message;

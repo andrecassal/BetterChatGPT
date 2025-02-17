@@ -7,7 +7,7 @@ import PopupModal from '@components/PopupModal';
 import SettingIcon from '@icon/SettingIcon';
 import ThemeSwitcher from '@components/Menu/MenuOptions/ThemeSwitcher';
 import LanguageSelector from '@components/LanguageSelector';
-import AutoTitleToggle from './AutoTitleToggle';
+
 import AdvancedModeToggle from './AdvencedModeToggle';
 import InlineLatexToggle from './InlineLatexToggle';
 
@@ -46,7 +46,6 @@ const SettingsMenu = () => {
             <LanguageSelector />
             <ThemeSwitcher />
             <div className='flex flex-col gap-3'>
-              <AutoTitleToggle />
               <EnterToSubmitToggle />
               <InlineLatexToggle />
               <AdvancedModeToggle />

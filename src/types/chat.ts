@@ -107,7 +107,6 @@ export interface LocalStorageInterfaceV2ToV3 {
   apiFreeEndpoint: string;
   apiEndpoint?: string;
   theme: Theme;
-  autoTitle: boolean;
 }
 export interface LocalStorageInterfaceV3ToV4 {
   chats: ChatInterface[];
@@ -117,7 +116,7 @@ export interface LocalStorageInterfaceV3ToV4 {
   apiFreeEndpoint: string;
   apiEndpoint?: string;
   theme: Theme;
-  autoTitle: boolean;
+  
   prompts: Prompt[];
 }
 
@@ -129,7 +128,7 @@ export interface LocalStorageInterfaceV4ToV5 {
   apiFreeEndpoint: string;
   apiEndpoint?: string;
   theme: Theme;
-  autoTitle: boolean;
+  
   prompts: Prompt[];
 }
 
@@ -141,7 +140,7 @@ export interface LocalStorageInterfaceV5ToV6 {
   apiFreeEndpoint: string;
   apiEndpoint?: string;
   theme: Theme;
-  autoTitle: boolean;
+  
   prompts: Prompt[];
 }
 
@@ -152,7 +151,7 @@ export interface LocalStorageInterfaceV6ToV7 {
   apiKey: string;
   apiEndpoint: string;
   theme: Theme;
-  autoTitle: boolean;
+  
   prompts: Prompt[];
   defaultChatConfig: ConfigInterface;
   defaultSystemMessage: string;
