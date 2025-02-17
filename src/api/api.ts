@@ -1,7 +1,28 @@
-import { ShareGPTSubmitBodyInterface } from '@type/api';
 import { ConfigInterface, MessageInterface, ModelOptions } from '@type/chat';
 import { isAzureEndpoint } from '@utils/api';
 
+/**
+ * Fetches a chat completion from the specified API endpoint
+ * 
+ * @param endpoint - The API endpoint URL to send the request to
+ * @param messages - Array of message objects containing the conversation history
+ * @param config - Configuration object for the API request
+ * @param apiKey - Optional API key for authentication
+ * @param customHeaders - Optional additional headers to include in the request
+ * 
+ * @returns The chat completion response data
+ * 
+ * @throws {Error} If the API request fails - includes error message from response
+ * 
+ * @remarks
+ * - Handles both regular OpenAI and Azure OpenAI endpoints
+ * - For Azure endpoints:
+ *   - Maps model names (e.g. gpt-3.5-turbo -> gpt-35-turbo)
+ *   - Sets appropriate API versions based on model
+ *   - Constructs proper deployment URL path
+ * - Sends request with messages and config
+ * - Returns parsed JSON response data
+ */
 export const getChatCompletion = async (
   endpoint: string,
   messages: MessageInterface[],
@@ -58,6 +79,29 @@ export const getChatCompletion = async (
   return data;
 };
 
+
+
+/**
+ * Fetches a streaming chat completion from the specified API endpoint
+ * 
+ * @param endpoint - The API endpoint URL to send the request to
+ * @param messages - Array of message objects containing the conversation history
+ * @param config - Configuration object for the API request
+ * @param apiKey - Optional API key for authentication
+ * @param customHeaders - Optional additional headers to include in the request
+ * 
+ * @returns A ReadableStream containing the chat completion response
+ * 
+ * @throws {Error} If the model is not found - includes message about GPT-4 API access
+ * @throws {Error} If the API endpoint is invalid
+ * @throws {Error} If there are insufficient quotas or rate limits
+ * 
+ * @remarks
+ * - Handles both regular OpenAI and Azure OpenAI endpoints
+ * - For Azure endpoints, maps model names and sets appropriate API versions
+ * - Streams the response back as chunks for real-time processing
+ * - Includes helpful error messages for common failure cases
+ */
 export const getChatCompletionStream = async (
   endpoint: string,
   messages: MessageInterface[],
@@ -135,19 +179,4 @@ export const getChatCompletionStream = async (
 
   const stream = response.body;
   return stream;
-};
-
-export const submitShareGPT = async (body: ShareGPTSubmitBodyInterface) => {
-  const request = await fetch('https://sharegpt.com/api/conversations', {
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-  });
-
-  const response = await request.json();
-  const { id } = response;
-  const url = `https://shareg.pt/${id}`;
-  window.open(url, '_blank');
 };

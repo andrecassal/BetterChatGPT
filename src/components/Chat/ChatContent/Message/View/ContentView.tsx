@@ -39,7 +39,7 @@ const ContentView = memo(
     role,
   }: {
     content: string;
-    setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
     messageIndex: number;
     role: string;
   }) => {
@@ -69,7 +69,7 @@ const ContentView = memo(
 
     return (
       <>
-        <div className={`markdown prose prose-invert break-words ${role === 'user' ? 'max-w-md self-end bg-white bg-opacity-5 rounded-full pr-4 pl-4 pt-2 pb-2' : 'w-full w-auto'}`}>
+        <div className={`markdown prose prose-invert break-words ${role === 'user' ? 'self-end bg-white bg-opacity-5 rounded-full pr-4 pl-4 pt-2 pb-2' : ''}`}>
           {markdownMode ? (
             <ReactMarkdown
               remarkPlugins={[
@@ -99,7 +99,6 @@ const ContentView = memo(
             <span className='whitespace-pre-wrap'>{content}</span>
           )}
         </div>
-        <ContentControls isDelete={isDelete} setIsDelete={setIsDelete} messageIndex={messageIndex} handleCopy={handleCopy} setIsEdit={setIsEdit} handleDelete={handleDelete} />
       </>
     );
   }
@@ -133,7 +132,8 @@ const p = memo(
 );
 
 
-
+// This component is used to control the content of the message
+// [CASSAL][TODO] REMOVED FOR NOW, NEED TO UNDERSTAND IF WE WANT TO KEEP IT
 const ContentControls = memo(({
   isDelete,
   setIsDelete,

@@ -7,7 +7,7 @@ import Menu from '@components/Menu';
 
 import useInitialiseNewChat from '@hooks/useInitialiseNewChat';
 import { ChatInterface } from '@type/chat';
-import { Theme } from '@type/theme';
+
 import Toast from '@components/Toast';
 
 function App() {

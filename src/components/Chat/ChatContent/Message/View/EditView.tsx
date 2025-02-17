@@ -7,8 +7,6 @@ import useSubmit from '@hooks/useSubmit';
 import { ChatInterface } from '@type/chat';
 
 import PopupModal from '@components/PopupModal';
-import CommandPrompt from '../CommandPrompt';
-
 
 
 
@@ -34,8 +32,6 @@ const EditView = ({
   const { t } = useTranslation();
 
   
-
-
   const resetTextAreaHeight = () => {
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
   };
@@ -92,7 +88,9 @@ const EditView = ({
     const updatedChats: ChatInterface[] = JSON.parse(
       JSON.stringify(useStore.getState().chats)
     );
+    
     const updatedMessages = updatedChats[currentChatIndex].messages;
+    
     if (sticky) {
       if (_content !== '') {
         updatedMessages.push({ role: inputRole, content: _content });
@@ -101,12 +99,10 @@ const EditView = ({
       resetTextAreaHeight();
     } else {
       updatedMessages[messageIndex].content = _content;
-      updatedChats[currentChatIndex].messages = updatedMessages.slice(
-        0,
-        messageIndex + 1
-      );
+      updatedChats[currentChatIndex].messages = updatedMessages.slice(0,messageIndex + 1);
       setIsEdit(false);
     }
+
     setChats(updatedChats);
     handleSubmit();
   };
@@ -203,11 +199,9 @@ const EditViewButtons = memo(
             onClick={() => {
               !generating && setIsModalOpen(true);
             }}
-
             />
-
         </div>
-        <CommandPrompt _setContent={_setContent} />
+
       </div>
     );
   }

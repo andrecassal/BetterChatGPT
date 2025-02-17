@@ -22,7 +22,6 @@ const Message = React.memo(
     sticky?: boolean;
   }) => {
     const [isEdit, setIsEdit] = useState<boolean>(sticky);
-
     
     return (
       <div
@@ -32,21 +31,12 @@ const Message = React.memo(
         className={' w-1/2 flex flex-col '}
       >
 
-        {isEdit ? (
-          <EditView
-            content={content}
-            setIsEdit={setIsEdit}
-            messageIndex={messageIndex}
-            sticky={sticky}
-          />
-        ) : (
-          <ContentView
-            role={role}
-            content={content}
-            setIsEdit={setIsEdit}
-            messageIndex={messageIndex}
-          />
-        )}
+        <ContentView
+          role={role}
+          content={content}
+          setIsEdit={setIsEdit}
+          messageIndex={messageIndex}
+        />
 
       </div>
     );
