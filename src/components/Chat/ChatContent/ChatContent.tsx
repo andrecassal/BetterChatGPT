@@ -43,17 +43,14 @@ const ChatContent = () => {
 
             {messages?.map((message, index) => (
               (index !== 0 || message.role !== 'system') && (
-                <React.Fragment key={index}>
                   <Message
+                    key={index}
                     role={message.role}
                     content={message.content}
                     messageIndex={index}
                   />
-                  {!generating && <NewMessageButton messageIndex={index} />}
-                </React.Fragment>
               )
             ))}
-
 
 
           {error !== '' && <ErrorMessage error={error} />}
