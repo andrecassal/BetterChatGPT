@@ -22,17 +22,9 @@ const ChatContent = () => {
       ? state.chats[state.currentChatIndex].messages
       : []
   );
-  const stickyIndex = useStore((state) =>
-    state.chats &&
-    state.chats.length > 0 &&
-    state.currentChatIndex >= 0 &&
-    state.currentChatIndex < state.chats.length
-      ? state.chats[state.currentChatIndex].messages.length
-      : 0
-  );
-  const advancedMode = useStore((state) => state.advancedMode);
+
+
   const generating = useStore.getState().generating;
-  const hideSideMenu = useStore((state) => state.hideSideMenu);
 
   const saveRef = useRef<HTMLDivElement>(null);
 
@@ -50,14 +42,14 @@ const ChatContent = () => {
 
 
             {messages?.map((message, index) => (
-              (advancedMode || index !== 0 || message.role !== 'system') && (
+              (index !== 0 || message.role !== 'system') && (
                 <React.Fragment key={index}>
                   <Message
                     role={message.role}
                     content={message.content}
                     messageIndex={index}
                   />
-                  {!generating && advancedMode && <NewMessageButton messageIndex={index} />}
+                  {!generating && <NewMessageButton messageIndex={index} />}
                 </React.Fragment>
               )
             ))}
