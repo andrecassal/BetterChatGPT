@@ -1,18 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import ScrollToBottom from 'react-scroll-to-bottom';
+
 import useStore from '@store/store';
 
-import ScrollToBottomButton from './ScrollToBottomButton';
-import ChatTitle from './ChatTitle';
 import Message from './Message';
-import NewMessageButton from './Message/NewMessageButton';
-import CrossIcon from '@icon/CrossIcon';
 
 import useSubmit from '@hooks/useSubmit';
 
 
 const ChatContent = () => {
-  const inputRole = useStore((state) => state.inputRole);
+
   const setError = useStore((state) => state.setError);
   const messages = useStore((state) =>
     state.chats &&
