@@ -5,7 +5,6 @@ import useCloudAuthStore from '@store/cloud-auth-store';
 
 import PopupModal from '@components/PopupModal';
 import SettingIcon from '@icon/SettingIcon';
-import ThemeSwitcher from '@components/Menu/MenuOptions/ThemeSwitcher';
 import LanguageSelector from '@components/LanguageSelector';
 
 import InlineLatexToggle from './InlineLatexToggle';
@@ -18,12 +17,8 @@ import ClearConversation from '@components/Menu/MenuOptions/ClearConversation';
 const SettingsMenu = () => {
   const { t } = useTranslation();
 
-  const theme = useStore.getState().theme;
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    document.documentElement.className = theme;
-  }, [theme]);
   return (
     <>
       <a
@@ -42,7 +37,6 @@ const SettingsMenu = () => {
         >
           <div className='p-6 border-b border-gray-200 dark:border-gray-600 flex flex-col items-center gap-4'>
             <LanguageSelector />
-            <ThemeSwitcher />
             <div className='flex flex-col gap-3'>
               <EnterToSubmitToggle />
               <InlineLatexToggle />

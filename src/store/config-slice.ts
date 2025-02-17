@@ -1,11 +1,9 @@
 import { StoreSlice } from './store';
-import { Theme } from '@type/theme';
 import { ConfigInterface } from '@type/chat';
 import { _defaultChatConfig, _defaultSystemMessage } from '@constants/chat';
 
 export interface ConfigSlice {
   openConfig: boolean;
-  theme: Theme;
   hideMenuOptions: boolean;
   defaultChatConfig: ConfigInterface;
   defaultSystemMessage: string;
@@ -14,7 +12,6 @@ export interface ConfigSlice {
   inlineLatex: boolean;
   markdownMode: boolean;
   setOpenConfig: (openConfig: boolean) => void;
-  setTheme: (theme: Theme) => void;
   setDefaultChatConfig: (defaultChatConfig: ConfigInterface) => void;
   setDefaultSystemMessage: (defaultSystemMessage: string) => void;
   setHideMenuOptions: (hideMenuOptions: boolean) => void;
@@ -26,7 +23,6 @@ export interface ConfigSlice {
 
 export const createConfigSlice: StoreSlice<ConfigSlice> = (set, get) => ({
   openConfig: false,
-  theme: 'dark',
   hideMenuOptions: false,
   hideSideMenu: false,
   enterToSubmit: true,
@@ -38,12 +34,6 @@ export const createConfigSlice: StoreSlice<ConfigSlice> = (set, get) => ({
     set((prev: ConfigSlice) => ({
       ...prev,
       openConfig: openConfig,
-    }));
-  },
-  setTheme: (theme: Theme) => {
-    set((prev: ConfigSlice) => ({
-      ...prev,
-      theme: theme,
     }));
   },
   setDefaultChatConfig: (defaultChatConfig: ConfigInterface) => {

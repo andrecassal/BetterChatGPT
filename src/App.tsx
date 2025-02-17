@@ -13,7 +13,6 @@ import Toast from '@components/Toast';
 function App() {
   const initialiseNewChat = useInitialiseNewChat();
   const setChats = useStore((state) => state.setChats);
-  const setTheme = useStore((state) => state.setTheme);
   const setApiKey = useStore((state) => state.setApiKey);
   const setCurrentChatIndex = useStore((state) => state.setCurrentChatIndex);
 

@@ -1,5 +1,4 @@
 import { Prompt } from './prompt';
-import { Theme } from './theme';
 
 export type Role = 'user' | 'assistant' | 'system';
 export const roles: Role[] = ['user', 'assistant', 'system'];
@@ -86,7 +85,6 @@ export interface LocalStorageInterfaceV0ToV1 {
   apiKey: string;
   apiFree: boolean;
   apiFreeEndpoint: string;
-  theme: Theme;
 }
 
 export interface LocalStorageInterfaceV1ToV2 {
@@ -96,7 +94,7 @@ export interface LocalStorageInterfaceV1ToV2 {
   apiFree: boolean;
   apiFreeEndpoint: string;
   apiEndpoint?: string;
-  theme: Theme;
+  
 }
 
 export interface LocalStorageInterfaceV2ToV3 {
@@ -106,7 +104,7 @@ export interface LocalStorageInterfaceV2ToV3 {
   apiFree: boolean;
   apiFreeEndpoint: string;
   apiEndpoint?: string;
-  theme: Theme;
+  
 }
 export interface LocalStorageInterfaceV3ToV4 {
   chats: ChatInterface[];
@@ -115,7 +113,7 @@ export interface LocalStorageInterfaceV3ToV4 {
   apiFree: boolean;
   apiFreeEndpoint: string;
   apiEndpoint?: string;
-  theme: Theme;
+  
   
   prompts: Prompt[];
 }
@@ -127,7 +125,7 @@ export interface LocalStorageInterfaceV4ToV5 {
   apiFree: boolean;
   apiFreeEndpoint: string;
   apiEndpoint?: string;
-  theme: Theme;
+  
   
   prompts: Prompt[];
 }
@@ -139,7 +137,7 @@ export interface LocalStorageInterfaceV5ToV6 {
   apiFree: boolean;
   apiFreeEndpoint: string;
   apiEndpoint?: string;
-  theme: Theme;
+  
   
   prompts: Prompt[];
 }
@@ -150,7 +148,7 @@ export interface LocalStorageInterfaceV6ToV7 {
   apiFree?: boolean;
   apiKey: string;
   apiEndpoint: string;
-  theme: Theme;
+  
   
   prompts: Prompt[];
   defaultChatConfig: ConfigInterface;
