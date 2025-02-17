@@ -9,16 +9,11 @@ import useSubmit from '@hooks/useSubmit';
 import { ChatInterface } from '@type/chat';
 import FileChipList from './FileChip';
 
+import { MessageContentList } from '@type/chat';
+
 import './chat.css';
 
 
-interface IOpenAIMessageContentList {
-  type: string;
-  text?: string;
-  image_url?: {
-    url: string;
-  };
-}
 
 
 const ChatInput = ({files}: {files: File[]}) => {
@@ -73,7 +68,7 @@ const ChatInput = ({files}: {files: File[]}) => {
     
     const updatedMessages = updatedChats[currentChatIndex].messages;
     
-    const content_list:IOpenAIMessageContentList[] = [{
+    const content_list:MessageContentList[] = [{
       'type': 'text',
       'text': _content
     }]

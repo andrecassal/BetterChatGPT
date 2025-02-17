@@ -9,6 +9,14 @@ export interface MessageInterface {
   content: string;
 }
 
+export interface MessageContentList {
+  type: string;
+  text?: string;
+  image_url?: {
+    url: string;
+  };
+}
+
 export interface ChatInterface {
   id: string;
   title: string;
