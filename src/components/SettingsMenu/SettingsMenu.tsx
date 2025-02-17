@@ -8,7 +8,6 @@ import SettingIcon from '@icon/SettingIcon';
 import ThemeSwitcher from '@components/Menu/MenuOptions/ThemeSwitcher';
 import LanguageSelector from '@components/LanguageSelector';
 
-import AdvancedModeToggle from './AdvencedModeToggle';
 import InlineLatexToggle from './InlineLatexToggle';
 
 import PromptLibraryMenu from '@components/PromptLibraryMenu';
@@ -48,7 +47,6 @@ const SettingsMenu = () => {
             <div className='flex flex-col gap-3'>
               <EnterToSubmitToggle />
               <InlineLatexToggle />
-              <AdvancedModeToggle />
               <TotalTokenCostToggle />
             </div>
             <ClearConversation />
