@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 import useStore from '@store/store';
 
@@ -22,7 +22,6 @@ const ChatContent = () => {
 
   const generating = useStore.getState().generating;
 
-  const saveRef = useRef<HTMLDivElement>(null);
 
   // clear error at the start of generating new messages
   useEffect(() => {
@@ -34,7 +33,7 @@ const ChatContent = () => {
   const { error } = useSubmit();
 
   return (
-    <div className='h-full scroll-smooth overflow-y-auto flex flex-col items-center pt-8 pb-32' ref={saveRef}>
+    <div className='h-full scroll-smooth overflow-y-auto flex flex-col items-center pt-8 pb-32'>
 
 
             {messages?.map((message, index) => (
