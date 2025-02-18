@@ -60,7 +60,7 @@ function App() {
   }, []);
 
   return (
-    <div className='overflow-hidden w-full h-full relative'>
+    <div className='dark bg-gray-900 overflow-hidden w-full h-full relative'>
       <Menu />
       <Chat />
       <Toast />
