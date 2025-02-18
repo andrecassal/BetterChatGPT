@@ -15,11 +15,7 @@ const MenuOptions = () => {
   return (
     <>
       <CollapseOptions />
-      <div
-        className={`${
-          hideMenuOptions ? 'max-h-0' : 'max-h-full'
-        } overflow-hidden transition-all`}
-      >
+      <div className={`${hideMenuOptions ? 'max-h-0' : 'max-h-full'} overflow-hidden transition-all`}>
         {googleClientId && <GoogleSync clientId={googleClientId} />}
         <AboutMenu />
         <ImportExportChat />
