@@ -143,9 +143,14 @@ const setupContextMenu = (win) => {
 };
 
 function createWindow() {
+  // https://dev.to/vadimdemedes/making-electron-apps-feel-native-on-mac-52e8
+  // https://stackoverflow.com/questions/35660043/how-to-customize-the-window-title-bar-of-an-electron-app
+  // https://ghosty.hashnode.dev/custom-title-bar-for-electron-app-windows-and-mac
+
   autoUpdater.checkForUpdatesAndNotify();
 
   win = new BrowserWindow({
+    backgroundColor: 'rgb(32, 33, 35)',
     autoHideMenuBar: true,
     show: false,
     icon: assetPath(ICON),
@@ -153,8 +158,10 @@ function createWindow() {
 
   createTray(win);
 
-  win.maximize();
-  win.show();
+  win.once('ready-to-show', () => {
+    win.maximize();
+    win.show();
+});
 
   isDev || createServer();
 
@@ -166,6 +173,15 @@ function createWindow() {
 
   setupLinksLeftClick(win);
   setupContextMenu(win);
+
+
+  win.on('focus', () => {
+    win.webContents.send('focus');
+  });
+
+  win.on('blur', () => {
+      win.webContents.send('blur');
+  });
 
   return win;
 }
