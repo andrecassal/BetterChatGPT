@@ -11,137 +11,23 @@ const {
   Menu,
   MenuItem,
 } = require('electron');
+
+
 const isDev = require('electron-is-dev');
 const { autoUpdater } = require('electron-updater');
-let win = null;
+
 const instanceLock = app.requestSingleInstanceLock();
-const isMacOS = process.platform === 'darwin';
+
 
 if (require('electron-squirrel-startup')) app.quit();
 
 const PORT = isDev ? '5173' : '51735';
+const SERVER_URL = `http://localhost:${PORT}`;
 const ICON = 'icon-rounded.png';
 const ICON_TEMPLATE = 'iconTemplate.png';
 
-const setupLinksLeftClick = (win) => {
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: 'deny' };
-  });
-};
 
-const setupContextMenu = (win) => {
-  win.webContents.on('context-menu', (_, params) => {
-    const { x, y, linkURL, selectionText } = params;
-
-    const template = [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'pasteAndMatchStyle' },
-      { role: 'delete' },
-      { type: 'separator' },
-      { role: 'selectAll' },
-      { type: 'separator' },
-      { role: 'toggleDevTools' },
-    ];
-
-    const spellingMenu = [];
-
-    if (selectionText && !linkURL) {
-      // Add each spelling suggestion
-      for (const suggestion of params.dictionarySuggestions) {
-        spellingMenu.push(
-          new MenuItem({
-            label: suggestion,
-            click: () => win.webContents.replaceMisspelling(suggestion),
-          })
-        );
-      }
-
-      // Allow users to add the misspelled word to the dictionary
-      if (params.misspelledWord) {
-        spellingMenu.push(
-          new MenuItem({
-            label: 'Add to dictionary',
-            click: () =>
-              win.webContents.session.addWordToSpellCheckerDictionary(
-                params.misspelledWord
-              ),
-          })
-        );
-      }
-
-      if (spellingMenu.length > 0) {
-        spellingMenu.push({ type: 'separator' });
-      }
-
-      template.push(
-        { type: 'separator' },
-        {
-          label: `Search Google for "${selectionText}"`,
-          click: () => {
-            shell.openExternal(
-              `https://www.google.com/search?q=${encodeURIComponent(
-                selectionText
-              )}`
-            );
-          },
-        },
-        {
-          label: `Search DuckDuckGo for "${selectionText}"`,
-          click: () => {
-            shell.openExternal(
-              `https://duckduckgo.com/?q=${encodeURIComponent(selectionText)}`
-            );
-          },
-        }
-      );
-    }
-
-    if (linkURL) {
-      template.push(
-        { type: 'separator' },
-        {
-          label: 'Open Link in Browser',
-          click: () => {
-            shell.openExternal(linkURL);
-          },
-        },
-        {
-          label: 'Copy Link Address',
-          click: () => {
-            clipboard.writeText(linkURL);
-          },
-        },
-        {
-          label: 'Save Link As...',
-          click: () => {
-            dialog.showSaveDialog(
-              win,
-              { defaultPath: path.basename(linkURL) },
-              (filePath) => {
-                if (filePath) {
-                  download(win, linkURL, { filename: filePath });
-                }
-              }
-            );
-          },
-        }
-      );
-    }
-
-    Menu.buildFromTemplate([...spellingMenu, ...template]).popup({
-      window: win,
-      x,
-      y,
-    });
-  });
-};
-
+let win = null;
 function createWindow() {
   // https://dev.to/vadimdemedes/making-electron-apps-feel-native-on-mac-52e8
   // https://stackoverflow.com/questions/35660043/how-to-customize-the-window-title-bar-of-an-electron-app
@@ -156,23 +42,25 @@ function createWindow() {
     icon: assetPath(ICON),
   });
 
-  createTray(win);
+  win.loadFile('index.html')
+
+  // createTray(win);
 
   win.once('ready-to-show', () => {
     win.maximize();
     win.show();
-});
+  });
 
   isDev || createServer();
 
-  win.loadURL(`http://localhost:${PORT}`);
+  win.loadURL(SERVER_URL);
 
   if (isDev) {
     win.webContents.openDevTools({ mode: 'detach' });
   }
 
-  setupLinksLeftClick(win);
-  setupContextMenu(win);
+  // setupLinksLeftClick(win);
+  // setupContextMenu(win);
 
 
   win.on('focus', () => {
@@ -193,40 +81,8 @@ const assetPath = (asset) => {
   );
 };
 
-const createTray = (win) => {
-  const tray = new Tray(assetPath(!isMacOS ? ICON : ICON_TEMPLATE));
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Show',
-      click: () => {
-        win.maximize();
-        win.show();
-      },
-    },
-    {
-      label: 'Exit',
-      click: () => {
-        app.isQuiting = true;
-        app.quit();
-      },
-    },
-  ]);
 
-  tray.on('click', () => {
-    win.maximize();
-    win.show();
-  });
-  tray.setToolTip('Better ChatGPT');
-  tray.setContextMenu(contextMenu);
 
-  return tray;
-};
-
-app.on('window-all-closed', () => {
-  if (!isMacOS) {
-    app.quit();
-  }
-});
 
 process.on('uncaughtException', (error) => {
   // Perform any necessary cleanup tasks here
@@ -236,20 +92,6 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-if (!instanceLock) {
-  app.quit();
-} else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      win.focus();
-    }
-  });
-
-  app.whenReady().then(() => {
-    win = createWindow();
-  });
-}
 
 const createServer = () => {
   // Dependencies
@@ -316,3 +158,187 @@ const createServer = () => {
     console.log(`Server listening on http://localhost:${PORT}/`);
   });
 };
+
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+
+
+if (!instanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+
+    
+  app.whenReady().then(() => {
+    createWindow();
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow()
+      }
+    })
+  })
+
+}
+
+
+
+// const setupLinksLeftClick = (win) => {
+//   win.webContents.setWindowOpenHandler(({ url }) => {
+//     shell.openExternal(url);
+//     return { action: 'deny' };
+//   });
+// };
+
+// const setupContextMenu = (win) => {
+//   win.webContents.on('context-menu', (_, params) => {
+//     const { x, y, linkURL, selectionText } = params;
+
+//     const template = [
+//       { role: 'undo' },
+//       { role: 'redo' },
+//       { type: 'separator' },
+//       { role: 'cut' },
+//       { role: 'copy' },
+//       { role: 'paste' },
+//       { role: 'pasteAndMatchStyle' },
+//       { role: 'delete' },
+//       { type: 'separator' },
+//       { role: 'selectAll' },
+//       { type: 'separator' },
+//       { role: 'toggleDevTools' },
+//     ];
+
+//     const spellingMenu = [];
+
+//     if (selectionText && !linkURL) {
+//       // Add each spelling suggestion
+//       for (const suggestion of params.dictionarySuggestions) {
+//         spellingMenu.push(
+//           new MenuItem({
+//             label: suggestion,
+//             click: () => win.webContents.replaceMisspelling(suggestion),
+//           })
+//         );
+//       }
+
+//       // Allow users to add the misspelled word to the dictionary
+//       if (params.misspelledWord) {
+//         spellingMenu.push(
+//           new MenuItem({
+//             label: 'Add to dictionary',
+//             click: () =>
+//               win.webContents.session.addWordToSpellCheckerDictionary(
+//                 params.misspelledWord
+//               ),
+//           })
+//         );
+//       }
+
+//       if (spellingMenu.length > 0) {
+//         spellingMenu.push({ type: 'separator' });
+//       }
+
+//       template.push(
+//         { type: 'separator' },
+//         {
+//           label: `Search Google for "${selectionText}"`,
+//           click: () => {
+//             shell.openExternal(
+//               `https://www.google.com/search?q=${encodeURIComponent(
+//                 selectionText
+//               )}`
+//             );
+//           },
+//         },
+//         {
+//           label: `Search DuckDuckGo for "${selectionText}"`,
+//           click: () => {
+//             shell.openExternal(
+//               `https://duckduckgo.com/?q=${encodeURIComponent(selectionText)}`
+//             );
+//           },
+//         }
+//       );
+//     }
+
+//     if (linkURL) {
+//       template.push(
+//         { type: 'separator' },
+//         {
+//           label: 'Open Link in Browser',
+//           click: () => {
+//             shell.openExternal(linkURL);
+//           },
+//         },
+//         {
+//           label: 'Copy Link Address',
+//           click: () => {
+//             clipboard.writeText(linkURL);
+//           },
+//         },
+//         {
+//           label: 'Save Link As...',
+//           click: () => {
+//             dialog.showSaveDialog(
+//               win,
+//               { defaultPath: path.basename(linkURL) },
+//               (filePath) => {
+//                 if (filePath) {
+//                   download(win, linkURL, { filename: filePath });
+//                 }
+//               }
+//             );
+//           },
+//         }
+//       );
+//     }
+
+//     Menu.buildFromTemplate([...spellingMenu, ...template]).popup({
+//       window: win,
+//       x,
+//       y,
+//     });
+//   });
+// };
+
+
+
+// const createTray = (win) => {
+//   const tray = new Tray(assetPath(!isMacOS ? ICON : ICON_TEMPLATE));
+//   const contextMenu = Menu.buildFromTemplate([
+//     {
+//       label: 'Show',
+//       click: () => {
+//         win.maximize();
+//         win.show();
+//       },
+//     },
+//     {
+//       label: 'Exit',
+//       click: () => {
+//         app.isQuiting = true;
+//         app.quit();
+//       },
+//     },
+//   ]);
+
+//   tray.on('click', () => {
+//     win.maximize();
+//     win.show();
+//   });
+//   tray.setToolTip('Better ChatGPT');
+//   tray.setContextMenu(contextMenu);
+
+//   return tray;
+// };
