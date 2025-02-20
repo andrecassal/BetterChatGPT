@@ -19,10 +19,11 @@ import CrossIcon from '@icon/CrossIcon';
 
 import useSubmit from '@hooks/useSubmit';
 
-import { ChatInterface } from '@type/chat';
+import { ChatInterface, MessageContentList } from '@type/chat';
 
 import { codeLanguageSubset } from '@constants/chat';
 
+import FileChipList from '@components/Chat/FileChip';
 
 import CopyButton from './Button/CopyButton';
 import EditButton from './Button/EditButton';
@@ -38,7 +39,7 @@ const ContentView = memo(
     messageIndex,
     role,
   }: {
-    content: string;
+    content: MessageContentList[];
     setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
     messageIndex: number;
     role: string;
@@ -61,42 +62,45 @@ const ContentView = memo(
       setChats(updatedChats);
     };
 
-
-
-    const handleCopy = () => {
-      navigator.clipboard.writeText(content);
-    };
+    // Separate text and files
+    const textContent = content && Array.isArray(content) ? content.filter(item => item.type === 'text').map(item => item.text).join('\n') : content;
+    
+    const files = content && Array.isArray(content) ? content
+      .filter(item => item.type === 'image_url')
+      .map(item => {
+        const filename = item.image_url?.url.split('/').pop() || 'image';
+        return new File([], filename, { type: 'image/jpeg' });
+      }) : [];
 
     return (
       <>
         <div className={`markdown prose prose-invert break-words ${role === 'user' ? 'self-end bg-white bg-opacity-5 rounded-full pr-4 pl-4 pt-2 pb-2' : ''}`}>
           {markdownMode ? (
-            <ReactMarkdown
-              remarkPlugins={[
-                remarkGfm,
-                [remarkMath, { singleDollarTextMath: inlineLatex }],
-              ]}
-              rehypePlugins={[
-                rehypeKatex,
-                [
-                  rehypeHighlight,
-                  {
-                    detect: true,
-                    ignoreMissing: true,
-                    subset: codeLanguageSubset,
-                  },
-                ],
-              ]}
-              linkTarget='_new'
-              components={{
-                code,
-                p,
-              }}
-            >
-              {content}
-            </ReactMarkdown>
+            <>
+              {files.length > 0 && <FileChipList files={files} isInteractive={false}/>}
+              <ReactMarkdown
+                remarkPlugins={[
+                  remarkGfm,
+                  [remarkMath, { singleDollarTextMath: inlineLatex }],
+                ]}
+                rehypePlugins={[rehypeKatex, [rehypeHighlight, {
+                  detect: true,
+                  ignoreMissing: true,
+                  subset: codeLanguageSubset,
+                }]]}
+                linkTarget='_new'
+                components={{
+                  code,
+                  p,
+                }}
+              >
+                {textContent}
+              </ReactMarkdown>
+            </>
           ) : (
-            <span className='whitespace-pre-wrap'>{content}</span>
+            <span className='whitespace-pre-wrap'>
+              {typeof content === 'string' ? content : content.filter(item => item.type === 'text').map(item => item.text).join('\n')}
+            </span>
           )}
         </div>
       </>
@@ -131,57 +135,54 @@ const p = memo(
   }
 );
 
-
 // This component is used to control the content of the message
 // [CASSAL][TODO] REMOVED FOR NOW, NEED TO UNDERSTAND IF WE WANT TO KEEP IT
-const ContentControls = memo(({
-  isDelete,
-  setIsDelete,
-  messageIndex,
-  handleCopy,
-  handleDelete,
-  setIsEdit,
-}: {
-  isDelete: boolean;
-  setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  messageIndex: number;
-  handleCopy: () => void;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  handleDelete: () => void;
-}) => {
+// const ContentControls = memo(({
+//   isDelete,
+//   setIsDelete,
+//   messageIndex,
+//   handleCopy,
+//   handleDelete,
+//   setIsEdit,
+// }: {
+//   isDelete: boolean;
+//   setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+//   messageIndex: number;
+//   handleCopy: () => void;
+//   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+//   handleDelete: () => void;
+// }) => {
   
-  return (
-    <div className='flex flex-row justify-end gap-2 w-full mt-2'>
-      {isDelete || (
-        <>
-          <MarkdownModeButton />
-          <CopyButton onClick={handleCopy} />
-          <EditButton setIsEdit={setIsEdit} />
-          <DeleteButton setIsDelete={setIsDelete} />
-        </>
-      )}
-      {isDelete && (
-        <>
-          <button
-            className='p-1 hover:text-white'
-            aria-label='cancel'
-            onClick={() => setIsDelete(false)}
-          >
-            <CrossIcon />
-          </button>
-          <button
-            className='p-1 hover:text-white'
-            aria-label='confirm'
-            onClick={handleDelete}
-          >
-            <TickIcon />
-          </button>
-        </>
-      )}
-    </div>
-  )
-})
-
-
+//   return (
+//     <div className='flex flex-row justify-end gap-2 w-full mt-2'>
+//       {isDelete || (
+//         <>
+//           <MarkdownModeButton />
+//           <CopyButton onClick={handleCopy} />
+//           <EditButton setIsEdit={setIsEdit} />
+//           <DeleteButton setIsDelete={setIsDelete} />
+//         </>
+//       )}
+//       {isDelete && (
+//         <>
+//           <button
+//             className='p-1 hover:text-white'
+//             aria-label='cancel'
+//             onClick={() => setIsDelete(false)}
+//           >
+//             <CrossIcon />
+//           </button>
+//           <button
+//             className='p-1 hover:text-white'
+//             aria-label='confirm'
+//             onClick={handleDelete}
+//           >
+//             <TickIcon />
+//           </button>
+//         </>
+//       )}
+//     </div>
+//   )
+// })
 
 export default ContentView;

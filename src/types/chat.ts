@@ -5,7 +5,7 @@ export const roles: Role[] = ['user', 'assistant', 'system'];
 
 export interface MessageInterface {
   role: Role;
-  content: string;
+  content: MessageContentList[];
 }
 
 export interface MessageContentList {

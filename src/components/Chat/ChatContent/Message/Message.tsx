@@ -4,8 +4,7 @@ import useStore from '@store/store';
 import ContentView from './View/ContentView';
 import EditView from './View/EditView';
 
-
-import { Role } from '@type/chat';
+import { Role, MessageContentList } from '@type/chat';
 
 
 
@@ -17,7 +16,7 @@ const Message = React.memo(
     sticky = false,
   }: {
     role: Role;
-    content: string;
+    content: MessageContentList[];
     messageIndex: number;
     sticky?: boolean;
   }) => {
@@ -30,14 +29,12 @@ const Message = React.memo(
         role="row"
         className={' w-1/2 flex flex-col '}
       >
-
         <ContentView
           role={role}
           content={content}
           setIsEdit={setIsEdit}
           messageIndex={messageIndex}
         />
-
       </div>
     );
   }

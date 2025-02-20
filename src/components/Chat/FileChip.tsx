@@ -1,34 +1,61 @@
-import React from 'react';
+import React, { useState } from 'react';
 
+/**
+ * Component that displays a list of file chips and handles file removal
+ */
 interface FileChipListProps {
   files: File[];
-  onRemove: (file: File) => void;
+  onRemove?: (file: File) => void;
+  isInteractive?: boolean;
 }
 
-const FileChipList: React.FC<FileChipListProps> = ({ files, onRemove }) => {
+const FileChipList: React.FC<FileChipListProps> = ({ files, onRemove, isInteractive = true }) => {
+  if(files.length === 0) {
+    return null;
+  }
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-row flex-wrap gap-2 pb-2">
       {files.map((file) => (
-        <FileChip key={file.name} filename={file.name} onRemove={() => onRemove(file)} />
+        <FileChip key={file.name} filename={file.name} isInteractive={isInteractive} onRemove={() => onRemove && onRemove(file)} />
       ))}
     </div>
   );
 };
 
-
+/**
+ * Props for individual file chip components
+ */
 interface FileChipProps {
     filename: string;
-    onRemove: () => void;
-  }
+    onRemove?: () => void;
+    isInteractive?: boolean;
+}
   
+/**
+ * Possible document type categories for files
+ */
 type DocumentType = 'Document' | 'Image' | 'Table' | 'Data' | 'File';
   
-const FileChip: React.FC<FileChipProps> = ({ filename, onRemove }) => {
+/**
+ * Component that displays a single file chip with icon, name, type and remove button
+ */
+const FileChip: React.FC<FileChipProps> = ({ filename, onRemove, isInteractive = true }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const selfOnRemove = () => {
+    onRemove && onRemove();
+  };
+
+  /**
+   * Extracts file extension from filename
+   */
   const getFileType = (filename: string): string => {
     const extension = filename.split('.').pop()?.toLowerCase() || '';
     return extension;
   };
 
+  /**
+   * Maps file extensions to document type categories
+   */
   const getDocumentType = (fileType: string): DocumentType => {
     const upperFileType = fileType.toUpperCase();
     
@@ -47,6 +74,9 @@ const FileChip: React.FC<FileChipProps> = ({ filename, onRemove }) => {
     return 'File';
   };
 
+  /**
+   * Returns SVG path for file type icon based on extension
+   */
   const getFileIcon = (fileType: string) => {
     switch (fileType) {
       case 'txt':
@@ -88,6 +118,9 @@ const FileChip: React.FC<FileChipProps> = ({ filename, onRemove }) => {
     }
   };
 
+  /**
+   * Returns background color class based on file type
+   */
   const getBackgroundColor = (fileType: string): string => {
     switch (fileType) {
       case 'txt':
@@ -120,33 +153,31 @@ const FileChip: React.FC<FileChipProps> = ({ filename, onRemove }) => {
   const documentType = getDocumentType(fileType);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-lg max-w-fit">
-      <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 ${backgroundColor} rounded-lg flex items-center justify-center`}>
-          <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            {getFileIcon(fileType)}
-          </svg>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-white text-sm">{filename}</span>
-          <span className="text-gray-400 text-xs">{documentType}</span>
-        </div>
-      </div>
-      <button 
-        onClick={onRemove}
-        className="text-gray-400 hover:text-white"
-      >
+    <div className={`flex items-center flex-row gap-2 px-3 py-2 bg-gray-800 rounded-lg max-w-xs relative`} 
+        title={filename} 
+        onMouseEnter={() => setIsHovered(true)} 
+        onMouseLeave={() => setIsHovered(false)}>
+
+      {isInteractive && (
+        <button onClick={selfOnRemove} className={`text-gray-400 bg-white rounded-full p-1 absolute -top-2 -left-2 ${isHovered ? 'visible' : 'invisible'}`}>
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+      )}
+
+      <div className={`w-8 h-8 ${backgroundColor} rounded-lg flex items-center justify-center px-2`}>
+        <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          {getFileIcon(fileType)}
+        </svg>
+      </div>
+      <div className="flex grow flex-col w-96">
+        <div className="text-white text-sm text-ellipsis overflow-hidden inline-block w-64">{filename}</div>
+        <div className="text-gray-400 text-xs">{documentType}</div>
+      </div>
+      
     </div>
   );
 };
-
-
-
-
-
 
 export default FileChipList;

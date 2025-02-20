@@ -53,7 +53,7 @@ const Chat = () => {
       <MobileBar />
       <main className='relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1'>
         <ChatContent />
-        <ChatInput files={files} />
+        <ChatInput files={files} setFiles={setFiles} />
         <StopGeneratingButton />
         <DroppingArea enabled={isDragging} />
       </main>
